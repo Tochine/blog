@@ -1,7 +1,11 @@
 const User = require("../models/User");
 
 exports.home = function (req, res) {
-  res.render("home-guest");
+  if (req.session.user) {
+    res.render("home-dashboard", { username: req.session.user.username });
+  } else {
+    res.render("home-guest");
+  }
 };
 
 exports.register = function (req, res) {
@@ -19,9 +23,18 @@ exports.login = function (req, res) {
   user
     .login()
     .then(function (result) {
-      res.send(result);
+      req.session.user = { favColor: "blue", username: user.data.username };
+      req.session.save(function () {
+        res.redirect("/");
+      });
     })
     .catch(function (err) {
       res.send(err);
     });
+};
+
+exports.logout = function (req, res) {
+  req.session.destroy(() => {
+    res.redirect("/");
+  });
 };
