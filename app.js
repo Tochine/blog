@@ -4,6 +4,8 @@ const session = require("express-session");
 
 const MongoStore = require("connect-mongo")(session);
 
+const flash = require("connect-flash");
+
 const app = express();
 
 let sessionOptions = session({
@@ -12,12 +14,13 @@ let sessionOptions = session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    // maxAge: 1000 * 60 * 60 * 24,
+    maxAge: 1000 * 60 * 60 * 24,
     httpOnly: true,
   },
 });
 
 app.use(sessionOptions);
+app.use(flash());
 
 const router = require("./router");
 
