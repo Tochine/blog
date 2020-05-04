@@ -8,6 +8,26 @@ let User = function (data) {
   this.errors = [];
 };
 
+User.prototype.register = function () {
+  return new Promise(async (resolve, reject) => {
+    // Step #1: validate user data
+    this.cleanUp();
+    await this.validate();
+    // Step #2: Only if there are no error
+    // Then save the user data to a database
+    if (!this.errors.length) {
+      // Hash user password
+      let salt = bcrypt.genSaltSync(10);
+      this.data.password = bcrypt.hashSync(this.data.password, salt);
+      await usersCollection.insertOne(this.data);
+      this.getAvatar();
+      resolve();
+    } else {
+      reject(this.errors);
+    }
+  });
+};
+
 User.prototype.cleanUp = function () {
   if (typeof this.data.username != "string") {
     this.data.username = "";
@@ -104,26 +124,6 @@ User.prototype.login = function () {
       .catch(function () {
         reject("Something went wrong! Please try again later");
       });
-  });
-};
-
-User.prototype.register = function () {
-  return new Promise(async (resolve, reject) => {
-    // Step #1: validate user data
-    this.cleanUp();
-    await this.validate();
-    // Step #2: Only if there are no error
-    // Then save the user data to a database
-    if (!this.errors.length) {
-      // Hash user password
-      let salt = bcrypt.genSaltSync(10);
-      this.data.password = bcrypt.hashSync(this.data.password, salt);
-      await usersCollection.insertOne(this.data);
-      this.getAvatar();
-      resolve();
-    } else {
-      reject(this.errors);
-    }
   });
 };
 
