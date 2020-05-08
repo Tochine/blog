@@ -56,7 +56,7 @@ Post.prototype.store = function () {
   });
 };
 
-Post.reusablePostQuery = function (uniqueOperations) {
+Post.reusablePostQuery = function (uniqueOperations, visitorId) {
   return new Promise(async function (resolve, reject) {
     let aggregateOperations = uniqueOperations.concat([
       {
@@ -72,6 +72,7 @@ Post.reusablePostQuery = function (uniqueOperations) {
           title: 1,
           body: 1,
           createdDate: 1,
+          authorId: "$author",
           author: { $arrayElemAt: ["$authorDocument", 0] },
         },
       },
@@ -81,6 +82,7 @@ Post.reusablePostQuery = function (uniqueOperations) {
 
     // Clean up author property in each post object
     posts = posts.map(function (post) {
+      post.isVisitorowner = post.authorId.equals(visitorId);
       post.author = {
         username: post.author.username,
         avatar: new User(post.author, true).avatar,
@@ -91,7 +93,7 @@ Post.reusablePostQuery = function (uniqueOperations) {
   });
 };
 
-Post.findSinglePostById = function (id) {
+Post.findSinglePostById = function (id, visitorId) {
   return new Promise(async function (resolve, reject) {
     // If the ID is not a string of text or not a valid mongodb ID
     if (typeof id != "string" || !objectID.isValid(id)) {
@@ -99,9 +101,10 @@ Post.findSinglePostById = function (id) {
       return;
     }
 
-    let posts = await Post.reusablePostQuery([
-      { $match: { _id: new objectID(id) } },
-    ]);
+    let posts = await Post.reusablePostQuery(
+      [{ $match: { _id: new objectID(id) } }],
+      visitorId
+    );
 
     if (posts.length) {
       resolve(posts[0]);
