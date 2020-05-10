@@ -30,5 +30,6 @@ router.post(
   postController.storePost
 );
 router.get("/post/:id", postController.viewSinglePost);
+router.get("/post/:id/edit", postController.viewEditScreen);
 
 module.exports = router;
