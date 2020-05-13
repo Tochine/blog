@@ -7,11 +7,13 @@ exports.storePost = function (req, res) {
   let post = new Post(req.body, req.session.user._id);
   post
     .store()
-    .then(function () {
-      res.send("New post created.");
+    .then(function (newId) {
+      req.flash("success", "New post successfully created.");
+      req.session.save(() => res.redirect(`/post/${newId}`));
     })
     .catch(function (errors) {
-      res.send(errors);
+      errors.forEach((error) => req.flash("errors", error));
+      req.session.save(() => res.redirect("/create-post"));
     });
 };
 
