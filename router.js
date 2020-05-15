@@ -40,5 +40,10 @@ router.post(
   userController.mustBeLoggedIn,
   postController.updatePost
 );
+router.post(
+  "/post/:id/delete",
+  userController.mustBeLoggedIn,
+  postController.deletePost
+);
 
 module.exports = router;

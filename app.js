@@ -24,7 +24,24 @@ app.use(function (req, res, next) {
   // Make our markdown function available from within ejs template
   res.locals.filterUserHTML = function (content) {
     return sanitizeHTML(markdown(content), {
-      allowedTags: [],
+      allowedTags: [
+        "p",
+        "i",
+        "li",
+        "ol",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "a",
+        "ul",
+        "strong",
+        "bold",
+        "em",
+        "br",
+      ],
       allowedAttributes: {},
     });
   };
