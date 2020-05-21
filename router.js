@@ -45,5 +45,6 @@ router.post(
   userController.mustBeLoggedIn,
   postController.deletePost
 );
+router.post("/search", postController.search);
 
 module.exports = router;
