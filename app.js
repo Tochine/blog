@@ -72,4 +72,31 @@ app.set("view engine", "ejs");
 
 app.use("/", router);
 
-module.exports = app;
+const server = require("http").createServer(app);
+
+const socketIO = require("socket.io")(server);
+
+socketIO.use(function (socket, next) {
+  sessionOptions(socket.request, socket.request.res, next);
+});
+
+socketIO.on("connection", function (socket) {
+  if (socket.request.session.user) {
+    let user = socket.request.session.user;
+
+    socket.emit("welcome", { username: user.username, avatar: user.avatar });
+
+    socket.on("chatMessageFromBrowser", function (data) {
+      socket.broadcast.emit("chatMessageFromBrowser", {
+        message: sanitizeHTML(data.message, {
+          allowedTags: [],
+          allowedAttributes: {},
+        }),
+        username: user.username,
+        avatar: user.avatar,
+      });
+    });
+  }
+});
+
+module.exports = server;
