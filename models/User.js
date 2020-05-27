@@ -70,16 +70,16 @@ User.prototype.validate = function () {
     if (this.data.password == "") {
       this.errors.push("You must provide a password");
     }
-    if (this.data.password.lenth > 0 && this.data.password.lenth < 5) {
+    if (this.data.password.length > 0 && this.data.password.lenth < 5) {
       this.errors.push("Password must be at least 5 characters");
     }
-    if (this.data.password.lenth > 50) {
+    if (this.data.password.length > 50) {
       this.errors.push("Password cannot exceed 50 characters.");
     }
-    if (this.data.username.lenth > 0 && this.data.username.lenth < 5) {
+    if (this.data.username.length > 0 && this.data.username.length < 5) {
       this.errors.push("Username must be at least 5 characters");
     }
-    if (this.data.username.lenth > 100) {
+    if (this.data.username.length > 100) {
       this.errors.push("Username cannot exceed 100 characters.");
     }
 
@@ -161,6 +161,22 @@ User.findByUsername = function (username) {
       .catch(function () {
         reject();
       });
+  });
+};
+
+User.doesEmailExist = function (email) {
+  return new Promise(async function (resolve, reject) {
+    if (typeof email != "string") {
+      resolve(false);
+      return;
+    }
+
+    let user = await usersCollection.findOne({ email: email });
+    if (user) {
+      resolve(true);
+    } else {
+      resolve(false);
+    }
   });
 };
 

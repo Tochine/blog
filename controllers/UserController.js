@@ -2,6 +2,21 @@ const User = require("../models/User");
 const Post = require("../models/Post");
 const Follow = require("../models/Follow");
 
+exports.doesUsernameExist = function (req, res) {
+  User.findByUsername(req.body.username)
+    .then(function () {
+      res.json(true);
+    })
+    .catch(function () {
+      res.json(false);
+    });
+};
+
+exports.doesEmailExist = async function (req, res) {
+  let emailBoolean = await User.doesEmailExist(req.body.email);
+  res.json(emailBoolean);
+};
+
 exports.register = function (req, res) {
   let user = new User(req.body);
   user
@@ -127,6 +142,7 @@ exports.profilePostsScreen = function (req, res) {
   Post.findByAuthorId(req.profileUser._id)
     .then(function (posts) {
       res.render("profile", {
+        title: `Profile for ${req.profileUser.username}`,
         currentPage: "posts",
         posts: posts,
         profileUsername: req.profileUser.username,

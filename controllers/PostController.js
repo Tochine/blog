@@ -20,7 +20,7 @@ exports.storePost = function (req, res) {
 exports.viewSinglePost = async function (req, res) {
   try {
     let post = await Post.findSinglePostById(req.params.id, req.visitorId);
-    res.render("single-post-screen", { post: post });
+    res.render("single-post-screen", { post: post, title: post.title });
   } catch {
     res.render("404");
   }
