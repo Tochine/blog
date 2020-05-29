@@ -3,6 +3,7 @@ const Post = require("../models/Post");
 exports.viewCreateScreen = function (req, res) {
   res.render("create-post");
 };
+
 exports.storePost = function (req, res) {
   let post = new Post(req.body, req.session.user._id);
   post
@@ -93,5 +94,31 @@ exports.search = function (req, res) {
     })
     .catch(() => {
       res.json([]);
+    });
+};
+
+// Api related functions
+
+exports.apiCreate = function (req, res) {
+  let post = new Post(req.body, req.apiUser._id);
+  post
+    .store()
+    .then(function (newId) {
+      res.json("Congrats, post created!", 201);
+    })
+    .catch(function (errors) {
+      res.json(errors);
+    });
+};
+
+exports.apiDeletePost = function (req, res) {
+  Post.delete(req.params.id, req.apiUser._id)
+    .then(() => {
+      res.status(200).json("Post successfully deleted.");
+    })
+    .catch(() => {
+      res
+        .status(401)
+        .json("You do not have permission to perform that action.");
     });
 };
