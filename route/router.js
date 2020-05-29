@@ -2,9 +2,9 @@ const express = require("express");
 
 const router = express.Router();
 
-const userController = require("./controllers/UserController");
-const postController = require("./controllers/PostController");
-const followController = require("./controllers/FollowController");
+const userController = require("../controllers/UserController");
+const postController = require("../controllers/PostController");
+const followController = require("../controllers/FollowController");
 
 // User related routes
 router.get("/", userController.home);

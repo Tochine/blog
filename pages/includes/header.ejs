@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>
-      <%= typeof(title) == "undefined" ? "OurApp" : `${title} | OurApp` %>
+      <%= typeof(title) == "undefined" ? "OurApp" : `${title} | MyBlogApp` %>
     </title>
     <link
       rel="stylesheet"
@@ -31,7 +31,7 @@
         class="container d-flex flex-column flex-md-row align-items-center p-3"
       >
         <h4 class="my-0 mr-md-auto font-weight-normal">
-          <a href="/" class="text-white">OurApp</a>
+          <a href="/" class="text-white">MyBlogApp</a>
         </h4>
         <% if (user) { %>
         <div class="flex-row my-3 my-md-0">
@@ -62,6 +62,7 @@
             >Create Post</a
           >
           <form action="/logout" method="POST" class="d-inline">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
             <button class="btn btn-sm btn-secondary">Sign Out</button>
           </form>
         </div>
@@ -86,6 +87,7 @@
               />
             </div>
             <div class="col-md-auto">
+              <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
               <button type="submit" class="btn btn-primary btn-sm">
                 Sign In
               </button>

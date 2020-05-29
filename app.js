@@ -3,8 +3,14 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
 const flash = require("connect-flash");
 const markdown = require("marked");
+const csrf = require("csurf");
 const app = express();
 const sanitizeHTML = require("sanitize-html");
+
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
+app.use("/api/v1", require("./route/router-api"));
 
 let sessionOptions = session({
   secret: "Progressiong fine with my JavaScript classes",
@@ -61,16 +67,31 @@ app.use(function (req, res, next) {
   next();
 });
 
-const router = require("./router");
-
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+const router = require("./route/router");
 
 app.use(express.static("public"));
 app.set("views", "pages");
 app.set("view engine", "ejs");
 
+app.use(csrf());
+
+app.use(function (req, res, next) {
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
+
 app.use("/", router);
+
+app.use(function (err, req, res, next) {
+  if (err) {
+    if (err.code == "EBADCSRFTOKEN") {
+      req.flash("errors", "Cross Site Request Forgery detected");
+      req.session.save(() => res.redirect("/"));
+    } else {
+      res.render("404");
+    }
+  }
+});
 
 const server = require("http").createServer(app);
 
